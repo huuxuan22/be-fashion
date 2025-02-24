@@ -2,6 +2,7 @@ package com.example.projectc1023i1.filter;
 
 import com.example.projectc1023i1.component.JwtTokenUtils;
 import com.example.projectc1023i1.model.Users;
+import com.example.projectc1023i1.service.RedisService;
 import com.example.projectc1023i1.service.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletContext;
@@ -32,6 +33,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private final JwtTokenUtils jwtTokenUtils;
     private final ServletContext servletContext;
     private final TokenService tokenService;
+    private final RedisService redisService;
 
     /**
      *xu ly yeu cau va tiep tuc bo loc
@@ -61,6 +63,14 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
             final String token = authenticate.substring(7); // lay doan ma token tu chi so 7 den het chuoi
             final String username = jwtTokenUtils.extractUserName(token);
+            List<String> tokenList = redisService.getTokenList(username);
+            for (String tokenLogout : tokenList ) {
+                if (tokenLogout.equals(token)) {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.getWriter().write("Token này đã bị chặn. Vui lòng đăng nhập lại.");
+                    return;
+                }
+            }
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 Users userDetials = (Users) userDetailsService.loadUserByUsername(username);
                 tokenService.getToken(userDetials.getUsername());

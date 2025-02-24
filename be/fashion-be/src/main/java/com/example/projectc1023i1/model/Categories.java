@@ -13,7 +13,7 @@ import lombok.*;
 public class Categories {
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
-    @Column(name = "categories_id")
+    @Column(name = "category_id")
     private int categorieId;
 
     @Column(name = "categories_name")

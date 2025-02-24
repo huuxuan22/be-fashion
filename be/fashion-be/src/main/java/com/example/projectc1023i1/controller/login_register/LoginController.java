@@ -4,6 +4,7 @@ import com.example.projectc1023i1.component.JwtTokenUtils;
 import com.example.projectc1023i1.model.Users;
 import com.example.projectc1023i1.request.LoginRequest;
 import com.example.projectc1023i1.respone.ErrorRespones;
+import com.example.projectc1023i1.service.RedisService;
 import com.example.projectc1023i1.utils.GetTokenFromRequest;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
@@ -31,6 +33,9 @@ public class LoginController {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
+    @Autowired
+    private RedisService redisService;
+
 
     @PostMapping("/login")
     public ResponseEntity<?> login(
@@ -43,28 +48,21 @@ public class LoginController {
             // Lấy thông tin người dùng từ Authentication object
             Users user = (Users) authentication.getPrincipal();
             String jwt = jwtTokenUtils.generateToken(user);
-
-            redisTemplate.opsForValue().set("TOKEN_" + user.getUsername(), jwt, Duration.ofMinutes(5));
             return ResponseEntity.ok(jwt);
-
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorRespones("Tài khoản hoặc mật khẩu không đúng.", HttpStatus.UNAUTHORIZED.value()));
         }catch (Exception e) {
-            // Xử lý các ngoại lệ khác (nếu có)
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Đã có lỗi xảy ra. Vui lòng thử lại sau.: "+ e.getMessage());
         }
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request) {
+    public ResponseEntity<?> logout(@AuthenticationPrincipal Users user,
+                                    HttpServletRequest request) {
         String token = GetTokenFromRequest.getTokenFromRequest(request);
-
         if (token != null) {
             String username = jwtTokenUtils.extractUserName(token);
-
-            // Xóa token khỏi Redis
-            redisTemplate.delete("TOKEN_" + username);
-
+            redisService.addTokenList(username,token);
             return ResponseEntity.ok("Đăng xuất thành công");
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

@@ -1,0 +1,11 @@
+# Loại trừ tệp Firebase credentials
+fashion-be/firebase_conf/c1023l1-firebase-adminsdk-ydqwc-71110193d2.json
+
+# Loại trừ tệp .env
+.env
+
+# Loại trừ thư mục build
+fashion-be/build/
+
+# Loại trừ tệp application.properties
+fashion-be/src/main/resources/application.properties

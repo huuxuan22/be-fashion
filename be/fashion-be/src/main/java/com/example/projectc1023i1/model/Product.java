@@ -18,29 +18,31 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
-    private long productId;
+    private Integer productId;
 
     @Column(name = "product_name")
     private String productName;
 
     private String description;
 
-    @Column(name = "create_at")
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "update_at")
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "is_active")
+    private Boolean isActive;
+
+    @Column(name = "thumbnail")
+    private String thumbnail;
+
+    @Column(name = "quality")
+    private Integer quality;
+
     @ManyToOne
-    @JoinColumn(name = "categories_id")
+    @JoinColumn(name = "category_id")
     private Categories categories;
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Image> images;
-
-    @OneToOne
-    @JoinColumn(name = "product_variant_id")
-    private ProductVariant productVariant;
 
     @PrePersist
     public void prePersist() {

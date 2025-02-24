@@ -16,6 +16,6 @@ public class Size {
     @Column(name = "size_id")
     private Integer sizeId;
 
-    @Column(name = "size_name")
-    private String sizeName;
+    @Column(name = "name_size")
+    private String nameSize;
 }

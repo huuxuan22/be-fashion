@@ -24,11 +24,22 @@ public class CategoriesController {
     @Autowired
     private View error;
 
+    /**
+     *
+     * @return tra ve tat ca danh sach category
+     */
     @GetMapping("/getAll")
     public ResponseEntity<?> getAllCategories() {
         return ResponseEntity.ok(categoriesService.findAll());
     }
 
+    /**
+     *
+     * @param categoriesDTO lop category validtate
+     * @param bindingResult lop validate tra ve ket qua
+     * @param request
+     * @return
+     */
     @PostMapping("/create")
     public ResponseEntity<?> createCategories(@Valid @RequestBody CategoriesDTO categoriesDTO,
                                               BindingResult bindingResult,
@@ -66,6 +77,12 @@ public class CategoriesController {
         return ResponseEntity.ok(categoriesDTO);
     }
 
+    /**
+     *
+     * @param id id cua categry
+     * @return tra ve 404 de khong tim thay
+     *          tra ve 400 neu khong tim thay san pham
+     */
     @DeleteMapping("delete/{id}")
     public ResponseEntity<?> deleteCategories(@PathVariable Integer id) {
         if (id == null) {
@@ -79,7 +96,12 @@ public class CategoriesController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không tìm thấy sản phẩm");
     }
 
-
+    /**
+     *
+     * @param id id cua category
+     * @return loi 404 neu khong tim thay id cua  category
+     *          loi 400 neu khong tim thay san pham
+     */
     @GetMapping("/{id}")
     public ResponseEntity<?> getCategories(@PathVariable Integer id) {
         if (id == null) {
@@ -92,6 +114,16 @@ public class CategoriesController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("không tìm thấy loại sản phẩm ");
     }
 
+    /**
+     *
+     * @param id id cua category
+     * @param categoriesDTO lop category dung de lam validate
+     * @param bindingResult lop kiem tra validate tra ve ket qua
+     * @return
+     *          tra ve 404 neu khong tim thay
+     *          tra ve 400 neu validate cua categoriesDTO bi loi
+     *          tra ve 200 neu them moi thanh cong 1 category
+     */
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateCategories(@PathVariable Integer id,
                                               @Valid @RequestBody CategoriesDTO categoriesDTO,

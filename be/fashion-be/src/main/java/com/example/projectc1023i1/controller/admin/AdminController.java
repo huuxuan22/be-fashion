@@ -3,7 +3,6 @@ package com.example.projectc1023i1.controller.admin;
 import com.example.projectc1023i1.Dto.EmployeeDTO;
 import com.example.projectc1023i1.Exception.DataNotFoundException;
 import com.example.projectc1023i1.Exception.UserExepion;
-import com.example.projectc1023i1.config.FirebaseConfig;
 import com.example.projectc1023i1.model.AddressUser;
 import com.example.projectc1023i1.model.CategoryEmployeeeDetail;
 import com.example.projectc1023i1.model.Roles;
@@ -12,19 +11,19 @@ import com.example.projectc1023i1.request.GetInforEmployeeUpdate;
 import com.example.projectc1023i1.request.UploadImageEmployee;
 import com.example.projectc1023i1.respone.UserRespone;
 import com.example.projectc1023i1.respone.errorsValidate.EmployeeErrorsRespone;
-import com.example.projectc1023i1.service.AddressUserService;
 import com.example.projectc1023i1.service.impl.IAddressUserService;
 import com.example.projectc1023i1.service.impl.ICEmployeeDetailService;
 import com.example.projectc1023i1.service.impl.ICategoryEmployeeService;
 import com.example.projectc1023i1.service.impl.IUserService;
 import jakarta.validation.Valid;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -50,6 +49,12 @@ public class AdminController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    /**
+     *
+     * @param size so luong nguoi dung
+     * @param page so trang
+     * @return tra ve danh sach nguoi dung va ma 200
+     */
     @GetMapping("/get-all-user")
     public ResponseEntity<?> getAllUser(@RequestParam("size") int size
                                         , @RequestParam("page") int page) {
@@ -62,8 +67,16 @@ public class AdminController {
         return ResponseEntity.ok(page1);
     }
 
+
+    /**
+     *
+     * @param userId
+     * @return thong tin cua nguoi dung
+     * @throws UserExepion neu khonng tim thay thong tin cua nguoi dung
+     */
     @GetMapping("/get-infor-employee")
-    public ResponseEntity<?> getInforEmployee(@RequestParam("userId") int userId) throws UserExepion {
+    public ResponseEntity<?> getInforEmployee(@AuthenticationPrincipal  Users user,
+                                              @RequestParam("userId") Integer userId) throws UserExepion {
         UserRespone userRespone = userService.convertUserToUserRespone(userService.findUserById(userId));
         AddressUser addressUser = addressUserService.getAddressUser(userId);
 //        if (addressUser == null) {

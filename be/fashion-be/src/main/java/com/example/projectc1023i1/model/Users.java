@@ -28,9 +28,6 @@ public class Users implements UserDetails { // ddaay laf class lay ra thong tin 
     @Column(name = "img_url")
     private String imgUrl;
 
-    @Column(name = "age")
-    private int age;
-
     @Column(name = "gender")
     private Boolean gender;
 
